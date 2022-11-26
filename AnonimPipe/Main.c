@@ -41,6 +41,7 @@ int main()
 	ZeroMemory(&startInfo, sizeof(STARTUPINFO));
 	ZeroMemory(&processInformation, sizeof(PROCESS_INFORMATION));
 
+	LPSTR a;
 	BOOL process;
 	if (!CreateProcessA("C:\\Users\\סונדוטקוגאה\\source\\repos\\AnonimPipe\\Debug\\SecondProcess.exe", forWrite, NULL, &securityAttributes, TRUE, 0, NULL, NULL, &startInfo, &processInformation))
 	{
