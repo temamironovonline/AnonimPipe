@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <Windows.h>
 #include <malloc.h>
+#include <math.h>
 
-#define BUFFER_SIZE 12
+#define BUFFER_SIZE 120
 
 void decisionCompleteEquation(float*, struct structAnswer);
 void decisionIncompleteEquation(float*, struct structAnswer);
@@ -12,9 +13,7 @@ void writeResultToFile(struct structAnswer);
 
 struct structAnswer
 {
-	char* text;
 	float discriminant;
-	int countCorners;
 	float x1;
 	float x2;
 };
@@ -47,18 +46,15 @@ int main(int argc, char** argv)
 	free(forSplit);
 
 	struct structAnswer answer = {
-	answer.text = "",
 		answer.discriminant = 0,
-		answer.countCorners = 0,
 		answer.x1 = 0,
 		answer.x2 = 0
 	};
 
 	if (argumentsForCalculation[0] == 0)
 	{
-		answer.text = "Уравнение не является квадратным";
+		printf("Первый аргумент не может быть 0");
 		answer.discriminant = 0;
-		answer.countCorners = 0;
 		answer.x1 = 0;
 		answer.x2 = 0;
 		writeResultToFile(answer);
@@ -67,7 +63,6 @@ int main(int argc, char** argv)
 	else decisionIncompleteEquation(argumentsForCalculation, answer);
 
 
-	Sleep(5000);
 	return 0;
 }
 
@@ -76,16 +71,15 @@ void decisionCompleteEquation(float* forCoefficients, struct structAnswer forAns
 	float discriminant;
 	float x1, x2;
 
-	discriminant = pow(forCoefficients[1], 2) - 4 * forCoefficients[0] * forCoefficients[2];
+	printf("Полное квадратное уравнение!\n");
+	discriminant = (pow(forCoefficients[1], 2)) - (4 * forCoefficients[0] * forCoefficients[2]);
 
 	if (discriminant > 0)
 	{
 		x1 = (-forCoefficients[1] + sqrt(discriminant)) / (2 * forCoefficients[0]);
 		x2 = (-forCoefficients[1] - sqrt(discriminant)) / (2 * forCoefficients[0]);
 
-		forAnswer.text = "Полное квадратное уравнение. Дискриминант > 0";
 		forAnswer.discriminant = discriminant;
-		forAnswer.countCorners = 2;
 		forAnswer.x1 = x1;
 		forAnswer.x2 = x2;
 	}
@@ -93,18 +87,14 @@ void decisionCompleteEquation(float* forCoefficients, struct structAnswer forAns
 	{
 		x1 = (-forCoefficients[1] + sqrt(discriminant)) / (2 * forCoefficients[0]);
 
-		forAnswer.text = "Полное квадратное уравнение. Дискриминант = 0";
 		forAnswer.discriminant = discriminant;
-		forAnswer.countCorners = 1;
 		forAnswer.x1 = x1;
 		forAnswer.x2 = 0;
 	}
 	else
 	{
 
-		forAnswer.text = "Полное квадратное уравнение. Дискриминант < 0, нет корней";
 		forAnswer.discriminant = 0;
-		forAnswer.countCorners = 0;
 		forAnswer.x1 = 0;
 		forAnswer.x2 = 0;
 	}
@@ -114,7 +104,7 @@ void decisionCompleteEquation(float* forCoefficients, struct structAnswer forAns
 void decisionIncompleteEquation(float* forCoefficients, struct structAnswer forAnswer) //Вычисления при неполном квадратном уравнении
 {
 	float x1, x2;
-
+	printf("Неполное квадратное уравнение\n");
 	if (forCoefficients[1] == 0 && forCoefficients[2] != 0)
 	{
 		if (-(forCoefficients[2] / forCoefficients[0]) >= 0)
@@ -122,17 +112,13 @@ void decisionIncompleteEquation(float* forCoefficients, struct structAnswer forA
 			x1 = sqrt(-(forCoefficients[2] / forCoefficients[0]));
 			x2 = -x1;
 
-			forAnswer.text = "Неполное квадртаное уравнение. b = 0!";
 			forAnswer.discriminant = 0;
-			forAnswer.countCorners = 2;
 			forAnswer.x1 = x1;
 			forAnswer.x2 = x2;
 		}
 		else
 		{
-			forAnswer.text = "Неполное квадртаное уравнение. Нет корней, т.к. -(c/a) < 0";
 			forAnswer.discriminant = 0;
-			forAnswer.countCorners = 0;
 			forAnswer.x1 = 0;
 			forAnswer.x2 = 0;
 		}
@@ -142,9 +128,7 @@ void decisionIncompleteEquation(float* forCoefficients, struct structAnswer forA
 		x1 = 0;
 		x2 = -(forCoefficients[1] / forCoefficients[0]);
 
-		forAnswer.text = "Неполное квадртаное уравнение. c = 0!";
 		forAnswer.discriminant = 0;
-		forAnswer.countCorners = 2;
 		forAnswer.x1 = x1;
 		forAnswer.x2 = x2;
 	}
@@ -152,9 +136,7 @@ void decisionIncompleteEquation(float* forCoefficients, struct structAnswer forA
 	{
 		x1 = 0;
 
-		forAnswer.text = "Неполное квадртаное уравнение. b = 0, c = 0!";
 		forAnswer.discriminant = 0;
-		forAnswer.countCorners = 1;
 		forAnswer.x1 = x1;
 		forAnswer.x2 = 0;
 	}
@@ -163,11 +145,12 @@ void decisionIncompleteEquation(float* forCoefficients, struct structAnswer forA
 
 void writeResultToFile(struct structAnswer forAnswer) //Запись ответа в файл
 {
+	
 	DWORD countFileSymbols;
-	char* addressStruct = calloc(BUFFER_SIZE, sizeof(char));
-	sprintf(addressStruct, "%d", &forAnswer);
-	printf("%s awd\n", addressStruct);
-	WriteFile(hWrite, addressStruct, BUFFER_SIZE, &countFileSymbols, NULL);
+	//char* addressStruct = calloc(BUFFER_SIZE, sizeof(char));
+	////sprintf(addressStruct, "%d", &forAnswer);
+	//printf("%s\n", addressStruct);
+	WriteFile(hWrite, &forAnswer, sizeof(struct structAnswer), &countFileSymbols, NULL);
 	CloseHandle(hWrite);
 
 }

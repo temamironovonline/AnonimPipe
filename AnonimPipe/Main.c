@@ -5,13 +5,11 @@
 #include <malloc.h>
 
 #define BUFFER_SIZE 120
-#define PROCESS_PATH "C:\\Users\\сергеичевад\\Source\\Repos\\AnonimPipe\\x64\\Debug\\SecondProcess.exe"
+#define PROCESS_PATH "C:\\Users\\сергеичевад\\source\\repos\\AnonimPipe\\Debug\\SecondProcess.exe"
 
 struct structAnswer
 {
-	char* text;
 	float discriminant;
-	int countCorners;
 	float x1;
 	float x2;
 };
@@ -29,6 +27,13 @@ int main()
 	BOOL pipe;
 	pipe = CreatePipe(&hRead, &hWrite, &securityAttributes, BUFFER_SIZE);
 
+	int ad = 0;
+
+
+	while(scanf("%d", ad)==0);
+	{
+
+	}
 
 	int countOfSymbols = 0;
 	WriteFile(hWrite, "2 12 1", 7, countOfSymbols, NULL);
@@ -53,8 +58,8 @@ int main()
 	ZeroMemory(&startInfo, sizeof(STARTUPINFO));
 	ZeroMemory(&processInformation, sizeof(PROCESS_INFORMATION));
 
-	struct structAnswer* forAnswer = calloc(1, sizeof(struct structAnswer));
-	struct structAnswer forAnswer2;
+	//struct structAnswer* forAnswer = calloc(1, sizeof(struct structAnswer));
+	struct structAnswer forAnswer2 = {0, 0, 0};
 	LPSTR a;
 	BOOL process;
 	if (!CreateProcessA(PROCESS_PATH, forAll, &securityAttributes, &securityAttributes, TRUE, 0, NULL, NULL, &startInfo, &processInformation))
@@ -62,19 +67,13 @@ int main()
 		printf("Ошибка создания процесса %d\n", GetLastError());
 	}
 
-	Sleep(1000);
-
-	ReadFile(hRead, buffer, 120, countOfSymbols, NULL);
-	CloseHandle(hRead);
-	forAnswer = (struct structAnswer*)atoi(buffer);
-	printf("%d %s", forAnswer, buffer);
-	//forAnswer2 = *forAnswer;
-
 	WaitForSingleObject(processInformation.hProcess, INFINITE);
-	
-	//system("pause");
-	CloseHandle(processInformation.hThread);
-	CloseHandle(processInformation.hProcess);
+
+	void* check = NULL;
+	ReadFile(hRead, &forAnswer2, sizeof(struct structAnswer), countOfSymbols, NULL);
+
+	printf("%f %f %f", forAnswer2.discriminant, forAnswer2.x1, forAnswer2.x2);
+	CloseHandle(hRead);
 
 
 }
